@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }             
+        form {
+            margin-top: 20px;
+        }
+        input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recipe Finder 🍽️</h1>
+    <p>Enter a recipe request (e.g., "How do I make a burrito?")</p>
+    
+    <form method="GET" action="{% url 'get_recipe' %}">
+        <input type="text" name="query" placeholder="Enter your recipe request..." required>
+        <button type="submit">Get Recipe</button>
+    </form>
+
+    {% if response %}
+    <div class="response">
+        <h2>Recipe Result:</h2>
+        <pre>{{ response }}</pre>
+    </div>
+    {% endif %}
+</body>
+</html>
