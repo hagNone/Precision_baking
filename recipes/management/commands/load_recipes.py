@@ -16,4 +16,4 @@ class Command(BaseCommand):
                     direction=row[3],     
                     servings=row[4]      
                 )
-        self.stdout.write(self.style.SUCCESS("✅ Recipes loaded successfully!"))
+        self.stdout.write(self.style.SUCCESS(" Recipes loaded successfully!"))
