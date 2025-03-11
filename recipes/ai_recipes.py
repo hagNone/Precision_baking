@@ -2,7 +2,7 @@ import google.generativeai as genai
 from recipes.models import Recipe
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBjB_TNG1aCJvW8vbfXBLk7QON2cu1NUq0")
+genai.configure(api_key="########################")
 
 def fetch_recipe(user_input):
    
