@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
+from django.contrib import messages
 
 
 """ Main Home page """
@@ -51,7 +52,7 @@ def user_logout(request):
     return redirect("login")
 
 """ View for forgot_passsword page"""
-reset_tokens={}
+reset_tokens = {}
 @csrf_exempt
 def forgot_password(request):
     if request.method == 'POST':
@@ -63,33 +64,28 @@ def forgot_password(request):
             token = get_random_string(32)
             reset_tokens[token] = user.username
 
-            # Send reset link
-            reset_link = f"http://127.0.0.1:8000/reset_password/{token}/"
-            return JsonResponse({"message": "Password reset link", "reset_link": reset_link})
+            # Redirect to reset password page with token
+            return redirect(f"/reset_password/{token}/")
 
         return JsonResponse({"error": "User not Found!"}, status=400)
 
     return render(request, "forgot_password.html")
 
-""" View for reset_password page"""
-@csrf_exempt
 def reset_password(request, token):
-    if token not in reset_tokens:
-        return JsonResponse({"error": "Invalid or expired token"}, status=400)
+    if token in reset_tokens:
+        if request.method == 'POST':
+            password = request.POST.get("password")
+            user = User.objects.get(username=reset_tokens[token])
+            user.set_password(password)
+            user.save()
+            del reset_tokens[token]
+            messages.success(request, 'Password reset successful! Please log in.')
+            return redirect('login')  # Redirect to login page
 
-    if request.method == "POST":
-        new_password = request.POST.get("password")
-        username = reset_tokens.pop(token)
-
-        # Fetch user as a single object and reset the password
-        user = User.objects.get(username=username)  # ✅ Fix here
-        user.set_password(new_password)
-        user.save()
-
-        return redirect("login")
-
-    return render(request, "reset_password.html", {"token": token})
-
+        # Render the reset password form
+        return render(request, "reset_password.html", {"token": token})
+    else:
+        return JsonResponse({"error": "Invalid token!"}, status=400)
 
 """ View for get_recipe """
 @csrf_exempt
