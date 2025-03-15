@@ -7,7 +7,7 @@ def fetch_recipe(user_input):
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(f"Extract only the food name from this: '{user_input}'")#gets the food name from the given query
     food_name = response.text.strip()
-
+    
    #filter the only food name in the databse with help of gemini model which gave the keyword to search
     recipe = Recipe.objects.filter(food_name__icontains=food_name).first()
 
