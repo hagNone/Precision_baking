@@ -4,6 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <style>
+        body{
+            background-color:#000000;
+            color:#ffffff;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container{
+            box-shadow: 0px 0px 3px white;
+            padding: 100px;
+            background-color:#0c0a09;
+            border-radius: 20px;
+            text-align:center;
+        }
+        .form{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            
+        }
+        .input{
+            text-align: start;
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #d6d3d1
+        }
+        .input input{
+            display:flex;
+            justify-content: start;
+            background-color:#171717;
+            border: 1px solid #78716c;
+            margin-top: 8px;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 8px;
+            width: 250px;
+            color:#ffffff;
+        }
+        .input input::placeholder{
+            color: #d6d3d1;
+            padding:0px;
+        }
+        button{
+            display: grid;
+            place-items: center;
+            width: 125px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        p{
+            color:#a3a3a3;
+        }
+        p a{
+            color:#e4e4e7;
+            text-decoration: underline;
+        } 
+        p a: hover{
+            color:#fafafa;
+        }
+    </style>
     <script>
         function validatePasswords() {
             const password = document.getElementById("password").value;
@@ -18,14 +83,24 @@
     </script>
 </head>
 <body>
-    <h1>Sign Up</h1>
-    <form method="post" onsubmit="return validatePasswords()">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required><br><br>
-        <input type="password" id="password" name="password" placeholder="Password" required><br><br>
-        <input type="password" id="confirm_password" placeholder="Re-enter Password" required><br><br>
-        <button type="submit">Sign Up</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    <div class="container">
+        <h1>Sign Up</h1>
+        <div class="form">
+            <form method="post" onsubmit="return validatePasswords()">
+                {% csrf_token %}
+                <div class = "input">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class = "input">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                <div class = "input">
+                    <input type="password" id="confirm_password" placeholder="Re-enter Password" required>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
 </body>
 </html>
