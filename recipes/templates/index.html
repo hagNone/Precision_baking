@@ -6,89 +6,194 @@
     <title>Recipe Finder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            box-shadow: 0px 0px 6px rgba(255, 255, 255, 0.2);
             padding: 20px;
+            background-color: #0c0a09;
+            border-radius: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100vh;
         }
-        h1 {
-            color: #333;
-        }             
-        form {
-            margin-top: 20px;
+
+        .form {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0c0a09;
+            padding: 12px;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            z-index: 999;
         }
-        input {
-            width: 300px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+        
+        /* Response Styling */
         .response {
-            margin-top: 20px;
+            background-color: #171717;
+            color: #ffffff;
             padding: 15px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .favorite-btn {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            width: 100%;
             margin-top: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 5px;
+            overflow-y: auto;
+            text-align: left;
+            line-height: 1.5;
         }
-        .favorite-btn:hover {
-            background-color: #218838;
+
+        form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input input {
+            background-color: #171717;
+            border: 1px solid #78716c;
+            padding: 10px;
+            border-radius: 8px;
+            width: 650px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .input input::placeholder {
+            color: #a8a29e;
+        }
+
+        .input input:focus {
+            border-color: #3b82f6; /* Blue border on focus */
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
+            width: 125px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        .response h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #d1d5db;
+        }
+
+        .response pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        /* Error Message */
+        #error-message {
+            color: #ef4444;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Recipe Finder 🍽️</h1>
-    <p>Enter a recipe request (e.g., "How do I make a burrito?")</p>
+    <div class="container">
+        <h1>Recipe Finder 🍽️</h1>
+        <p>Enter a recipe request (e.g., "How do I make a burrito?")</p>
     
-    <form method="GET" action="{% url 'get_recipe' %}">
-        <input type="text" name="query" placeholder="Enter your recipe request..." required>
-        <button type="submit">Get Recipe</button>
-    </form>
-
-    {% if response %}
-    <div class="response">
-        <h2>Recipe Result:</h2>
-        <pre>{{ response }}</pre>
-
-        <!-- Add to Favorites Button -->
-        <button class="favorite-btn" onclick="addToFavorites('{{ recipe.id }}')">❤️ Add to Favorites</button>
+        <!-- Form -->
+        <div class="form">
+            <form id="recipe-form">
+                {% csrf_token %}
+                <div class="input">
+                    <input type="text" name="query" id="query" placeholder="Enter your recipe request..." required>
+                </div>
+                <button type="submit">Get Recipe</button>
+            </form>
+        </div>
+    
+        <!-- Error message -->
+        <div id="error-message" style="color: red; margin-top: 10px;"></div>
+    
+        <!-- Response Container -->
+        <div id="response-container" style="margin-top: 20px; padding-bottom:100px;margin-right:150px;"></div>
     </div>
-    {% endif %}
-
+    
     <script>
-        function addToFavorites(recipeId) {
-            fetch(`/add_to_favorites/${recipeId}/`, { 
-                method: "POST", 
-                headers: { "X-CSRFToken": "{{ csrf_token }}" } 
+        let responses = []; 
+    
+        document.getElementById("recipe-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+    
+            const query = document.getElementById("query").value;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const responseContainer = document.getElementById("response-container");
+            const errorMessage = document.getElementById("error-message");
+
+            errorMessage.textContent = '';
+    
+            fetch("{% url 'get_recipe' %}?query=" + encodeURIComponent(query), {
+                method: "GET",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                }
             })
             .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => console.error("Error:", error));
+            .then(data => {
+                if (data.error) {
+                    errorMessage.textContent = data.error;
+                } else {
+                    responses.unshift(data.response);
+
+                    renderResponses();
+
+                    document.getElementById("query").value = "";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                errorMessage.textContent = "Failed to fetch the recipe.";
+            });
+        });
+    
+        function renderResponses() {
+            const responseContainer = document.getElementById("response-container");
+            responseContainer.innerHTML = ""; 
+    
+            responses.forEach((response, index) => {
+                const responseElement = document.createElement("div");
+                responseElement.classList.add("response");
+                responseElement.innerHTML = `
+                    <h2>Recipe Result #${responses.length - index}:</h2>
+                    <pre>${response}</pre>
+                `;
+                responseContainer.appendChild(responseElement);
+            });
+    
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
