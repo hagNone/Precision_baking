@@ -6,89 +6,241 @@
     <title>Recipe Finder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            box-shadow: 0px 0px 6px rgba(255, 255, 255, 0.2);
             padding: 20px;
+            background-color: #0c0a09;
+            border-radius: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: hidden;
         }
-        h1 {
-            color: #333;
-        }             
-        form {
-            margin-top: 20px;
+
+        /* Menu Container */
+        .menu {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-        input {
-            width: 300px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
+
+        .menu button {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
             padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .menu button:hover {
+            background-color: #2563eb;
+        }
+
+        .form {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0c0a09;
+            padding: 12px;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input input {
+            background-color: #171717;
+            border: 1px solid #78716c;
+            padding: 10px;
+            border-radius: 8px;
+            width: 650px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .input input::placeholder {
+            color: #a8a29e;
+        }
+
+        .input input:focus {
+            border-color: #3b82f6;
+        }
+
+        button[type="submit"] {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
+            width: 125px;
+            height: 40px;
+            border-radius: 10px;
             font-size: 16px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        button[type="submit"]:hover {
+            background-color: #2563eb;
         }
-        .response {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .favorite-btn {
+
+        #error-message {
+            color: #ef4444;
             margin-top: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 5px;
         }
-        .favorite-btn:hover {
-            background-color: #218838;
+
+        /* Response Container */
+        #response-container {
+            margin-top: 20px;
+            padding-bottom: 100px;
+            overflow-y: auto;
+            max-height: 75vh;
+            text-align: left;
+            scroll-behavior: smooth;
+        }
+
+        .response {
+            background-color: #171717;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            width: 100%;
+            margin-bottom: 20px;
+            max-width: 880px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .response h2, .response h3 {
+            color: #d1d5db;
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
-    <h1>Recipe Finder 🍽️</h1>
-    <p>Enter a recipe request (e.g., "How do I make a burrito?")</p>
-    
-    <form method="GET" action="{% url 'get_recipe' %}">
-        <input type="text" name="query" placeholder="Enter your recipe request..." required>
-        <button type="submit">Get Recipe</button>
-    </form>
+    <div class="container">
+        <!-- Menu Container -->
+        <div class="menu">
+            <button onclick="logout()">Logout</button>
+            <button onclick="viewHistory()">History</button>
+            <button onclick="aboutUs()">About Us</button>
+        </div>
 
-    {% if response %}
-    <div class="response">
-        <h2>Recipe Result:</h2>
-        <pre>{{ response }}</pre>
+        <h1>Recipe Finder 🍽️</h1>
+        <p>Enter a recipe request (e.g., "How do I make a burrito?")</p>
 
-        <!-- Add to Favorites Button -->
-        <button class="favorite-btn" onclick="addToFavorites('{{ recipe.id }}')">❤️ Add to Favorites</button>
+        <!-- Error message -->
+        <div id="error-message"></div>
+
+        <!-- Response Container -->
+        <div id="response-container"></div>
+
+        <!-- Form -->
+        <div class="form">
+            <form id="recipe-form">
+                {% csrf_token %}
+                <div class="input">
+                    <input type="text" name="query" id="query" placeholder="Enter your recipe request..." required>
+                </div>
+                <button type="submit">Get Recipe</button>
+            </form>
+        </div>
     </div>
-    {% endif %}
 
     <script>
-        function addToFavorites(recipeId) {
-            fetch(`/add_to_favorites/${recipeId}/`, { 
-                method: "POST", 
-                headers: { "X-CSRFToken": "{{ csrf_token }}" } 
+        function logout() {
+            alert('Logged out successfully!');
+            window.location.href = '/logout';
+        }
+
+        function viewHistory() {
+            alert('Showing your recipe history!');
+            window.location.href = '/history';
+        }
+
+        function aboutUs() {
+            alert('Welcome to Recipe Finder, where deliciousness happens!');
+            window.location.href = '/about';
+        }
+
+        let responses = [];
+
+        document.getElementById("recipe-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const query = document.getElementById("query").value;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const errorMessage = document.getElementById("error-message");
+
+            errorMessage.textContent = '';
+
+            fetch("{% url 'get_recipe' %}?query=" + encodeURIComponent(query), {
+                method: "GET",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                }
             })
             .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => console.error("Error:", error));
+            .then(data => {
+                if (data.error) {
+                    errorMessage.textContent = data.error;
+                } else {
+                    responses.unshift({ query: query, response: data.response });
+                    renderResponses();
+                    document.getElementById("query").value = "";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                errorMessage.textContent = "Failed to fetch the recipe.";
+            });
+        });
+
+        function renderResponses() {
+            const responseContainer = document.getElementById("response-container");
+            responseContainer.innerHTML = "";
+
+            responses.forEach((item, index) => {
+                const responseElement = document.createElement("div");
+                responseElement.classList.add("response");
+                responseElement.innerHTML = `
+                    <h2>Query #${responses.length - index}:</h2>
+                    <p><strong>${item.query}</strong></p>
+                    <p>${item.response.replace(/\n/g, "<br>")}</p>
+                `;
+                responseContainer.appendChild(responseElement);
+            });
+
+            // Scroll to the latest response
+            setTimeout(() => {
+                responseContainer.scrollTop = responseContainer.scrollHeight;
+            }, 100);
         }
     </script>
 </body>

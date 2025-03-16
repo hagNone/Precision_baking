@@ -8,7 +8,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
 from django.contrib import messages
 
-
 """ Main Home page """
 @login_required
 def recipe_page(request):
@@ -88,6 +87,7 @@ def reset_password(request, token):
         return JsonResponse({"error": "Invalid token!"}, status=400)
 
 """ View for get_recipe """
+
 @csrf_exempt
 @login_required
 def get_recipe(request):
@@ -99,6 +99,7 @@ def get_recipe(request):
             return JsonResponse({"error": "No query provided!"}, status=400)
 
         try:
+            # Example: Replace with actual logic to fetch recipe
             response = fetch_recipe(user_input)
             return JsonResponse({"response": response})
         except Exception as e:
