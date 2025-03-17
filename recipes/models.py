@@ -6,13 +6,7 @@ from django.contrib.auth.models import User
 Create models for the database using python code because django supports Object to relational mapping
 
 """
-# this model where it creates profile table and stores related columns 
-class profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    favorite_recipes=models.ManyToManyField('Recipe',blank=True)
 
-    def __str__(self):
-        return self.user.username
 
 #this model where it creates Recipe table and stores related columns
 class Recipe(models.Model):

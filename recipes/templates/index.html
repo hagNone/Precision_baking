@@ -150,7 +150,7 @@
             <button onclick="logout()">Logout</button>
             <button onclick="viewHistory()">History</button>
             <button onclick="aboutUs()">About Us</button>
-            <buutton onclick="GetyourAPI()">GetyourAPI</buutton>
+            <button onclick="GetyourAPI()">GetyourAPI</button>
         </div>
 
         <h1>Recipe Finder 🍽️</h1>
@@ -189,6 +189,10 @@
             alert('Welcome to Recipe Finder, where deliciousness happens!');
             window.location.href = '/about';
         }
+        function GetyourAPI() {
+            alert('Get your API and Test the RAG Model');
+            window.location.href='/GetYourAPI'
+        }
 
         let responses = [];
 
@@ -223,26 +227,73 @@
             });
         });
 
-        function renderResponses() {
-            const responseContainer = document.getElementById("response-container");
-            responseContainer.innerHTML = "";
 
-            responses.forEach((item, index) => {
-                const responseElement = document.createElement("div");
-                responseElement.classList.add("response");
-                responseElement.innerHTML = `
-                    <h2>Query #${responses.length - index}:</h2>
-                    <p><strong>${item.query}</strong></p>
-                    <p>${item.response.replace(/\n/g, "<br>")}</p>
-                `;
-                responseContainer.appendChild(responseElement);
-            });
 
-            // Scroll to the latest response
-            setTimeout(() => {
-                responseContainer.scrollTop = responseContainer.scrollHeight;
-            }, 100);
+        function typeWriterEffect(element, text, speed = 30) {
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text[i];
+                i++;
+                setTimeout(type, speed);
+            }
         }
+        type();
+    }
+
+    // Format Recipe for Display
+function formatRecipe(response) {
+    return response
+        .replace(/(Recipe Name:)/gi, '<h2>🍽️ $1</h2>')
+        .replace(/(Prep Time:|Cook Time:|Total Time:|Serves:|Freezing Time:)/gi, '<strong>$1</strong>')
+        .replace(/(INGREDIENTS:)/gi, '<h3>🥕 $1</h3>')
+        .replace(/(DIRECTIONS:)/gi, '<h3>👨‍🍳 $1</h3>')
+        .replace(/(\d+\.)/g, '<br>$1')
+        .replace(/\n/g, '<br>');
+}
+
+// Render Responses with Word-by-Word Effect
+function renderResponses() {
+    const responseContainer = document.getElementById("response-container");
+    responseContainer.innerHTML = "";
+
+    responses.forEach((item, index) => {
+        const responseElement = document.createElement("div");
+        responseElement.classList.add("response");
+        responseElement.innerHTML = `
+            <h2>Query #${responses.length - index}:</h2>
+            <p><strong>${item.query}</strong></p>
+            <div id="response-text-${index}"></div>
+        `;
+        responseContainer.appendChild(responseElement);
+
+        // Apply formatted response with word-by-word effect
+        const formattedResponse = formatRecipe(item.response);
+        showWordByWord(`response-text-${index}`, formattedResponse);
+    });
+
+    // Scroll to the latest response
+    setTimeout(() => {
+        responseContainer.scrollTop = responseContainer.scrollHeight;
+    }, 100);
+}
+
+// Word-by-Word Animation Function
+function showWordByWord(elementId, text) {
+    const element = document.getElementById(elementId);
+    const words = text.split(' ');
+    let i = 0;
+
+    const interval = setInterval(() => {
+        if (i < words.length) {
+            element.innerHTML += words[i] + ' ';
+            i++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 50); // Adjust speed here (milliseconds per word)
+}
+
     </script>
 </body>
 </html>

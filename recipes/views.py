@@ -108,3 +108,7 @@ def get_recipe(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+@csrf_exempt
+@login_required
+def about_us(request):
+    return render(request,'about.html')

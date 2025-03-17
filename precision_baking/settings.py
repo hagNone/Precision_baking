@@ -38,7 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recipes',
+    'rest_framework',
 ]
+
+rest_framework={
+    'DEFUALT_THROTTLE_CLASSES':[
+        'rest_frameworl.throttling.UserRateThrottle',
+
+    ],
+    'DEFAULT_THROTTLE_RATE':{
+        'user':'5/minute'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -123,3 +134,11 @@ LOGIN_URL = '/login/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Config
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-password'  # Use the App Password here
