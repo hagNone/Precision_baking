@@ -7,6 +7,13 @@ Recipe Maker is a web-based app that helps users find recipes instantly using an
 
 Recipe Maker is a web-based app that helps users find recipes instantly using an AI-powered RAG (Retrieval-Augmented Generation) model. It generates personalized recipes based on the ingredients or dishes you want to cook.
 
+## MVP
+![{B07CE739-B690-4AF4-9C3D-CD80E00113F3}](https://github.com/user-attachments/assets/01077083-1a26-4f53-830e-9eba5c53adf0)
+
+
+
+
+
 
 ## ✨ Features
 
@@ -75,3 +82,5 @@ py manage.py runserver
 #### -Integrate voice commands.
 #### -Improve recipe recommendations.
 
+## Flow diagram of thw application
+![Untitled_(1) 1](https://github.com/user-attachments/assets/ae0623c4-e201-4f17-8615-834dc57c1247)
