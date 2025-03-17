@@ -82,5 +82,5 @@ py manage.py runserver
 #### -Integrate voice commands.
 #### -Improve recipe recommendations.
 
-## Flow diagram of thw application
+## Flow diagram of the application
 ![Untitled_(1) 1](https://github.com/user-attachments/assets/ae0623c4-e201-4f17-8615-834dc57c1247)
